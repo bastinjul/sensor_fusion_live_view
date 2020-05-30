@@ -16,8 +16,6 @@ defmodule SensorFusionLiveView.Application do
       # Start the Endpoint (http/https)
       SensorFusionLiveViewWeb.Endpoint,
 
-      SensorFusionLiveView.Sonars,
-
       SensorFusionLiveView.Multicast
       # Start a worker by calling: SensorFusionLiveView.Worker.start_link(arg)
       # {SensorFusionLiveView.Worker, arg}
