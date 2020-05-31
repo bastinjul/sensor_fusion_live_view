@@ -1,3 +1,0 @@
-defmodule PosMeasurements do
-
-end

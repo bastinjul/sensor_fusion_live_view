@@ -18,7 +18,8 @@ defmodule SensorFusionLiveViewWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
-    live "/sonars", SonarsMeasurements
+    live "/sonars/measurement", SonarsMeasurements
+    live "/sonars/calculation", SonarsCalculations
   end
 
   # Other scopes may use custom stacks.
