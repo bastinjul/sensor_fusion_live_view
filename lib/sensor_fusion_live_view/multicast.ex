@@ -36,6 +36,7 @@ defmodule SensorFusionLiveView.Multicast do
       {:measure, :pos, {node, iter, measure}} ->
         update_table(:measurements, :pos, node, iter, measure)
         Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "pos:measurements", :ets.tab2list(:measurements))
+        Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "room:pos", :ets.lookup(:measurements, :pos))
       {:calc, name, {node, iter, calculation}} ->
         update_table(:calculations, name, node, iter, calculation)
         Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "position:calculations", :ets.tab2list(:calculations))

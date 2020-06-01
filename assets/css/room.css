@@ -1,0 +1,31 @@
+html{
+    overflow-x:hidden;
+}
+
+body.room {
+    background: #000000;
+}
+
+.room-container{
+    position: absolute;
+    color: gray;
+    background: grey;
+}
+.room-container h1{
+    width: 100%;
+}
+.room{
+    position:relative;
+    z-index: 999;
+}
+.room-container .block{
+    display: block;
+    position: absolute;
+    z-index: 1;
+}
+.room-container .block.sonar{
+    background: red;
+}
+.room-container .block.object{
+    background: cyan;
+}

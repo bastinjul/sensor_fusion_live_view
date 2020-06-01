@@ -20,6 +20,7 @@ defmodule SensorFusionLiveViewWeb.Router do
     live "/", PageLive, :index
     live "/sonars/measurement", SonarsMeasurements
     live "/sonars/calculation", SonarsCalculations
+    live "/sonars/room", RoomTracker
   end
 
   # Other scopes may use custom stacks.

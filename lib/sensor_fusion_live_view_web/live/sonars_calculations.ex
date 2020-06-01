@@ -2,7 +2,6 @@ defmodule SensorFusionLiveViewWeb.SonarsCalculations do
   use SensorFusionLiveViewWeb, :live_view
 
   def render(assigns) do
-    IO.inspect assigns.calculation
     ~L"""
     <%= for k <- Keyword.keys(@calculation) do %>
       <%= if k == :position do %>
