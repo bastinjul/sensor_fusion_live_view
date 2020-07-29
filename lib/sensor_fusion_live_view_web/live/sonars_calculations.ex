@@ -9,7 +9,10 @@ defmodule SensorFusionLiveViewWeb.SonarsCalculations do
         <%= for node <- Map.keys(@calculation[k]) do %>
           <p>
             <% {iter, pos} = @calculation[k][node] %>
-            Position of the object, performed by node <%= node %> at iteration <%= iter %> : <%= pos %>
+            Position of the object, performed by node <%= node %> at iteration <%= iter %> :
+            <%= for {x, y} <- pos do %>
+              (x: <%= x %>, y: <%= y %>)
+            <% end %>
           </p>
         <% end %>
       <% end %>
@@ -31,7 +34,7 @@ defmodule SensorFusionLiveViewWeb.SonarsCalculations do
     {:noreply, socket}
   end
 
-  defp put_calculation(socket, calculation \\ [position: %{node@nohost: {-1, "x, -1, y, -1"}}]) do
+  defp put_calculation(socket, calculation \\ [position: %{node@nohost: {-1, [{0,0}]}}]) do
     assign(socket, :calculation, calculation)
   end
 

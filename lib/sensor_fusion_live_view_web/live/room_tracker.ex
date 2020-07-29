@@ -11,12 +11,22 @@ defmodule SensorFusionLiveViewWeb.RoomTracker do
     <div class="room-container"
         style="width: <%= @room_width + @width %>px;
                 height: <%= @room_height + @width %>px">
-      <%= for o <- @object_pos do %>
-        <div class="block object"
-            style="left: <%= x(o[:x], @coef_x) %>px;
-                    top: <%= x(o[:y], @coef_y) %>px;
-                    width: <%= @width %>px;
-                    height: <%= @width %>px;"></div>
+      <%= for obj <- @object_pos do %>
+        <%= for {pos_x,pos_y} <- obj[:pos] do %>
+          <%= if length(obj[:pos]) == 1 do %>
+            <div class="block object"
+              style="left: <%= x(pos_x, @coef_x) %>px;
+                      top: <%= x(pos_y, @coef_y) %>px;
+                      width: <%= @width %>px;
+                      height: <%= @width %>px;"></div>
+          <%= else %>
+            <div class="block two_objects"
+              style="left: <%= x(pos_x, @coef_x) %>px;
+                      top: <%= x(pos_y, @coef_y) %>px;
+                      width: <%= @width %>px;
+                      height: <%= @width %>px;"></div>
+          <% end %>
+        <% end %>
       <% end %>
       <%= for s <- @sonars do %>
         <div class="block sonar"
@@ -93,14 +103,11 @@ defmodule SensorFusionLiveViewWeb.RoomTracker do
     assign(socket, :coef_y, div(@room_width, max_y))
   end
 
-  defp place_object(socket, object_positions \\ [position: %{node@nohost: {-1, 'x1, 10.5, y1, 10.5, x2, 10.5, y2, -10.5'}}]) do
+  defp place_object(socket, object_positions \\ [position: %{node@nohost: {-1, [{10.5,20.5}]}}]) do
     positions = object_positions[:position]
     object_pos = for k <- Map.keys(positions) do
       {_, pos} = positions[k]
-      s = String.split(String.replace(to_string(pos), ",", ""))
-      {x, _} = List.pop_at(s, 1)
-      {y, _} = List.pop_at(s, 3)
-      %{x: String.to_float(x), y: String.to_float(y), width: @width}
+      %{pos: pos, width: @width}
     end
     assign(socket, :object_pos, object_pos)
   end
