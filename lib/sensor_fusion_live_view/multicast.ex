@@ -29,11 +29,19 @@ defmodule SensorFusionLiveView.Multicast do
 
   def handle_info({:udp, _socket, _ip, _port, data}, state) do
     msg = :erlang.binary_to_term(data)
+    IO.inspect msg
     case msg do
       {:measure, :sonar, {node, iter, measure}} ->
         update_table(:measurements, :sonar, node, iter, measure)
         Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "sonars:measurements", :ets.tab2list(:measurements))
+      {:measure, :sonar, {node, iter, measure}, _order} ->
+        update_table(:measurements, :sonar, node, iter, measure)
+        Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "sonars:measurements", :ets.tab2list(:measurements))
       {:measure, :pos, {node, iter, measure}} ->
+        update_table(:measurements, :pos, node, iter, measure)
+        Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "pos:measurements", :ets.tab2list(:measurements))
+        Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "room:pos", :ets.lookup(:measurements, :pos))
+      {:measure, :pos, {node, iter, measure}, _order} ->
         update_table(:measurements, :pos, node, iter, measure)
         Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "pos:measurements", :ets.tab2list(:measurements))
         Phoenix.PubSub.broadcast(SensorFusionLiveView.PubSub, "room:pos", :ets.lookup(:measurements, :pos))
