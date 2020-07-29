@@ -29,3 +29,7 @@ body.room {
 .room-container .block.object{
     background: cyan;
 }
+
+.room-container .block.two_objects{
+    background: limegreen;
+}
