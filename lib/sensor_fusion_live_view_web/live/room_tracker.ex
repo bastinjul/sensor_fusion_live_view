@@ -11,18 +11,19 @@ defmodule SensorFusionLiveViewWeb.RoomTracker do
     <div class="room-container"
         style="width: <%= @room_width + @width %>px;
                 height: <%= @room_height + @width %>px">
+      <%= coef = if @coef_x > @coef_y, do: @coef_y, else: @coef_x %>
       <%= for obj <- @object_pos do %>
         <%= for {pos_x,pos_y} <- obj[:pos] do %>
           <%= if length(obj[:pos]) == 1 do %>
             <div class="block object"
-              style="left: <%= x(pos_x, @coef_x) %>px;
-                      top: <%= x(pos_y, @coef_y) %>px;
+              style="left: <%= x(pos_x, coef, @min_x) %>px;
+                      top: <%= x(pos_y, coef, @min_y) %>px;
                       width: <%= @width %>px;
                       height: <%= @width %>px;"></div>
           <%= else %>
             <div class="block two_objects"
-              style="left: <%= x(pos_x, @coef_x) %>px;
-                      top: <%= x(pos_y, @coef_y) %>px;
+              style="left: <%= x(pos_x, coef, @min_x) %>px;
+                      top: <%= x(pos_y, coef, @min_y) %>px;
                       width: <%= @width %>px;
                       height: <%= @width %>px;"></div>
           <% end %>
@@ -30,8 +31,8 @@ defmodule SensorFusionLiveViewWeb.RoomTracker do
       <% end %>
       <%= for s <- @sonars do %>
         <div class="block sonar"
-            style="left: <%= x(s[:x], @coef_x) %>px;
-                    top: <%= x(s[:y], @coef_y) %>px;
+            style="left: <%= x(s[:x], coef, @min_x) %>px;
+                    top: <%= x(s[:y], coef, @min_y) %>px;
                     width: <%= @width %>px;
                     height: <%= @width %>px;"></div>
       <% end %>
@@ -69,8 +70,8 @@ defmodule SensorFusionLiveViewWeb.RoomTracker do
     assign(socket, defaults)
   end
 
-  defp x(x_idx, coef), do: x_idx*coef
-  defp y(y_odx, coef), do: y_odx*coef
+  defp x(x_idx, coef, min_x), do: (x_idx-min_x)*coef
+  defp y(y_odx, coef, min_y), do: (y_odx-min_y)*coef
 
   defp sonar(x_idx, y_idx, width) do
     %{type: :sonar, x: x_idx * width, y: y_idx * width, width: width}
@@ -93,14 +94,18 @@ defmodule SensorFusionLiveViewWeb.RoomTracker do
 
   defp coef_x(socket, positions) do
     max_x = List.foldl(positions, 1, fn pos, acc -> if pos[:x] > acc, do: pos[:x], else: acc end)
+    min_x = List.foldl(positions, @room_width, fn pos, acc -> if pos[:x] < acc, do: pos[:x], else: acc end)
     max_x = if max_x == 1, do: 600, else: max_x
-    assign(socket, :coef_x, div(@room_width, max_x))
+    min_x = if min_x == @room_width, do: 0, else: min_x
+    assign(socket, coef_x: @room_width / (max_x - min_x), min_x: min_x)
   end
 
   defp coef_y(socket, positions) do
     max_y = List.foldl(positions, 1, fn pos, acc -> if pos[:y] > acc, do: pos[:y], else: acc end)
+    min_y = List.foldl(positions, @room_height, fn pos, acc -> if pos[:y] < acc, do: pos[:y], else: acc end)
     max_y = if max_y == 1, do: 600, else: max_y
-    assign(socket, :coef_y, div(@room_width, max_y))
+    min_y = if min_y == @room_height, do: 0, else: min_y
+    assign(socket, coef_y: @room_height / (max_y - min_y), min_y: min_y)
   end
 
   defp place_object(socket, object_positions \\ [position: %{node@nohost: {-1, [{10.5,20.5}]}}]) do
